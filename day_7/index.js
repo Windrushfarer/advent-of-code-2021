@@ -4,33 +4,18 @@ import { readInputFile } from '../utils/readInput';
 function partOne() {
   const data = readInputFile(path.join(__dirname, 'input.txt'))
   const positions = data.split(',').map(Number)
-  const max = Math.max(...positions)
-  const min = Math.min(...positions)
+  const mid = Math.ceil(positions.length / 2)
+  const less = positions.filter(x => x < positions[mid]).sort((a, b) => a - b)
+  const more = positions.filter(x => x > positions[mid])
+  const mids = positions.filter(x => x === positions[mid])
+  const nums = [...less, ...mids, ...more]
+  const median = nums[mid]
 
-  const fuelSpend = {}
-
-  for (let i = min; i <= max; i++) {
-    fuelSpend[i] = 0
-
-    positions.forEach((end, j) => {
-      if (i !== end) {
-        fuelSpend[i] += Math.abs(end - i)
-      }
-    })
-  }
-
-  return Math.min(...Object.values(fuelSpend))
+  return nums
+    .map(pos => Math.abs(pos - median))
+    .reduce((sum, pos) => sum + pos, 0)
 }
 
-function rangeSum(end) {
-  let sum = 0;
-
-  for (let i = 1; i <= end; i++) {
-    sum += i;
-  }
-
-  return sum;
-}
 function partTwo() {
   const data = readInputFile(path.join(__dirname, 'input.txt'))
   const positions = data.split(',').map(Number)
@@ -42,9 +27,11 @@ function partTwo() {
   for (let i = min; i <= max; i++) {
     let fuelSpend = 0
 
-    positions.forEach((end, j) => {
+    positions.forEach(end => {
       if (i !== end) {
-        fuelSpend += rangeSum(Math.abs(end - i))
+        const distance = Math.abs(end - i)
+        // Gauss formula
+        fuelSpend += distance * (distance + 1) / 2
       }
     })
 
@@ -55,5 +42,5 @@ function partTwo() {
 }
 
 
-// partOne() // ?
-partTwo() // ?
+partOne()
+partTwo()
